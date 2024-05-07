@@ -6,7 +6,7 @@ const phin = require("phin")
     .defaults({ "parse": "json", "timeout": 12000 })
 
 const AUTHENTICATION_API = (token: string, hostKey: string) => (
-    `https://api.brick-hill.com/v1/auth/verifyToken?token=${encodeURIComponent(token)}&host_key=${encodeURIComponent(hostKey)}`
+    `https://sandpile.xyz/api/validateToken?token=${encodeURIComponent(token)}&hostKey=${encodeURIComponent(hostKey)}`
 )
 
 const UID_REGEX = /^[\w]{8}(-[\w]{4}){3}-[\w]{12}$/
@@ -69,9 +69,8 @@ export default async function checkAuth(socket: ClientSocket, reader: SmartBuffe
             return {
                 username: data.user.username,
                 userId: Number(data.user.id),
-                admin: data.user.is_admin,
-                // screw you jefemy
-                membershipType: (data.user.membership && data.user.membership.membership) || 1,
+                admin: data.user.admin,
+                membershipType: 1,
                 client: USER.clientId,
                 validator: data.validator,
             }

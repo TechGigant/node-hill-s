@@ -4,7 +4,7 @@ let postedOnce = false
 
 const phin = require("phin")
     .defaults({
-        url: "https://api.brick-hill.com/v1/games/postServer",
+        url: "https://sandpile.xyz/api/postServer",
         method: "POST",
         timeout: 12000
     })
@@ -26,7 +26,7 @@ interface SetResponse {
 function checkForBannedUsers(bannedUsers: number[]) {
     for (const player of Game.players) {
         if (bannedUsers.includes(player.userId))
-            player.kick("Banned from Brick Hill.")
+            player.kick("Banned from SandPile.")
     }
 }
 
@@ -34,7 +34,7 @@ async function initializeSetData(setResponse: SetResponse) {
     try {
         const setData: SetData = await Game.getSetData(setResponse.set_id)
         Game.setData = setData
-        console.log(`Posted to: https://www.brick-hill.com/play/${setResponse.set_id} successfully.`)
+        console.log(`Posted to: https://www.sandpile.xyz/set/${setResponse.set_id} successfully.`)
         postedOnce = true
         Game.emit("setDataLoaded")
     } catch (err) {
