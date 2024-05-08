@@ -1,7 +1,7 @@
 const phin = require("phin")
     .defaults({"parse": "json", "timeout": 12000})
 
-const GET_ASSETS =  "https://api.brick-hill.com/v1/games/retrieveAvatar?id="
+const GET_ASSETS =  "https://sandpile.xyz/api/getCharacter/"
 
 function getNonEmptyHats(assets) {
     const hats = []
@@ -29,26 +29,22 @@ async function setAvatar(p, userId) {
     p.colors.leftLeg        = "#" + data.colors.left_leg.toLowerCase()
     p.colors.rightLeg       = "#" + data.colors.right_leg.toLowerCase()
 
-    p.assets.tool           = data.items.tool
-    p.assets.face           = data.items.face
+    p.assets.tool           = data.tool
+    p.assets.face           = data.face
 
-    const hats = getNonEmptyHats(data.items)
+    const hats = getNonEmptyHats(data)
 
     p.assets.hat1 = hats[0] || 0
     p.assets.hat2 = hats[1] || 0
     p.assets.hat3 = hats[2] || 0
 
-    const clothing = data.items.clothing 
+    const clothing = data.clothing 
     if (clothing) {
         p.assets.clothing1 = clothing[0] || 0
         p.assets.clothing2 = clothing[1] || 0
         p.assets.clothing3 = clothing[2] || 0
         p.assets.clothing4 = clothing[3] || 0
         p.assets.clothing5 = clothing[4] || 0
-    } else {
-        p.assets.clothing1 = data.items.pants
-        p.assets.clothing2 = data.items.shirt
-        p.assets.clothing3 = data.items.tshirt
     }
     return true
 }

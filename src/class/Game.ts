@@ -285,7 +285,7 @@ export class Game extends EventEmitter {
 
     /**  
      * Returns player stats in JSON from this API: \
-     * https://api.brick-hill.com/v1/user/profile?id={userId}
+     * https://sandpile.xyz/api/getUserInfoById/{userId}
      * 
     */
     async getUserInfo(userId: number): Promise<JSON> {

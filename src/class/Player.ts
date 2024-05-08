@@ -890,7 +890,7 @@ export default class Player extends EventEmitter {
 
     /**
    * Returns player stats in JSON from this API: \
-   * https://api.brick-hill.com/v1/user/profile?id={userId}
+   * https://sandpile.xyz/api/getUserInfoById/?id={userId}
    * @example
    * ```js
    * Game.on("playerJoin", async(player) => {
@@ -918,40 +918,40 @@ export default class Player extends EventEmitter {
         return scripts.playerOwnsAsset(this.userId, assetId)
     }
 
-    /**
-     * Returns JSON data of total value and direction of users crate \
-     * https://api.brick-hill.com/v1/user/1/value
-     * 
-     * @example
-     * ```js
-     * Game.on("playerJoin", async(p) => {
-     *  let worth = await p.getValue(1524)
-     *  console.log("Player is worth: ", worth.value)
-     * })
-    ``` 
-     */
-    async getValue(): Promise<JSON> {
-        return scripts.getPlayerValue(this.userId)
-    }
+    // /**
+    //  * Returns JSON data of total value and direction of users crate \
+    //  * https://api.brick-hill.com/v1/user/1/value
+    //  * 
+    //  * @example
+    //  * ```js
+    //  * Game.on("playerJoin", async(p) => {
+    //  *  let worth = await p.getValue(1524)
+    //  *  console.log("Player is worth: ", worth.value)
+    //  * })
+    // ``` 
+    //  */
+    // async getValue(): Promise<JSON> {
+    //     return scripts.getPlayerValue(this.userId)
+    // }
 
-    /**
-     * Returns JSON data of the users rank in a group, or false if they aren't in the group. \
-     * https://api.brick-hill.com/v1/clan/member?id=1&user=1
-     * @example
-     * ```js
-     * Game.on("playerJoin", async(player) => {
-     *  const groupData = await player.getRankInGroup(5)
-     *  if (groupData) {
-     *      console.log(groupData)
-     *  } else {
-     *      console.log("Player is not in group.")
-     *  }
-     * })
-    * ```
-     */
-    async getRankInGroup(groupId: number): Promise<JSON | boolean> {
-        return scripts.getRankInGroup(groupId, this.userId)
-    }
+    // /**
+    //  * Returns JSON data of the users rank in a group, or false if they aren't in the group. \
+    //  * https://api.brick-hill.com/v1/clan/member?id=1&user=1
+    //  * @example
+    //  * ```js
+    //  * Game.on("playerJoin", async(player) => {
+    //  *  const groupData = await player.getRankInGroup(5)
+    //  *  if (groupData) {
+    //  *      console.log(groupData)
+    //  *  } else {
+    //  *      console.log("Player is not in group.")
+    //  *  }
+    //  * })
+    // * ```
+    //  */
+    // async getRankInGroup(groupId: number): Promise<JSON | boolean> {
+    //     return scripts.getRankInGroup(groupId, this.userId)
+    // }
 
     async kill() {
         if (!this.alive) return

@@ -4,7 +4,7 @@ const phin = require("phin")
         timeout: 12000 
     })
 
-const API = "https://api.brick-hill.com/v1/user/profile?id="
+const API = "https://sandpile.xyz/api/getUserInfoById/"
 
 async function getUserInfo(userId) {
     return (await phin({url: API + userId})).body
