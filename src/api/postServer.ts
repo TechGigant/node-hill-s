@@ -2,12 +2,13 @@ import Game, { SetData } from "../class/Game"
 
 let postedOnce = false
 
-const phin = require("phin")
-    .defaults({
-        url: "https://sandpile.xyz/api/postServer",
-        method: "POST",
-        timeout: 12000
-    })
+import https from "https";
+import axios from "axios";
+const agent = new https.Agent({ family: 4 } as https.AgentOptions);
+const axios_postserver = axios.create({
+    httpsAgent: agent,
+    httpAgent: agent
+});
 
 interface PostData {
     host_key: string
@@ -50,10 +51,10 @@ export default async function postServer(): Promise<SetResponse | null> {
             "players": Game.players.map(player => player.validationToken)
         }
 
-        const response = await phin({ data: postData })
+        const response = await axios_postserver.post("https://sandpile.xyz/api/postServer", postData);
 
         try {
-            const data: SetResponse = JSON.parse(response.body)
+            const data: SetResponse = response.data;
             if (data.error) {
                 console.warn("Failure while posting to games page:", JSON.stringify(data.error.message || data))
 
