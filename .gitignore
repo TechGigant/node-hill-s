@@ -95,3 +95,6 @@ dist/
 
 # Documentation
 public/
+
+# local testing files
+Server/

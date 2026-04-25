@@ -1,12 +1,11 @@
 // Node + npm modules
-import { resolve, basename, join, relative } from "path"
+import { resolve, basename, join, relative, dirname } from "path"
 import { promisify } from "node:util"
-import { NodeVM } from "vm2"
 import * as fs from "node:fs"
 import {globSync} from "glob"
 
 // Have to use require here because phin doesn't support .defaults with TS
-const phin = require("phin")
+const phin = require("./util/request")
     .defaults({ "parse": "json", "timeout": 12000 })
 
 // VM Classes
@@ -38,6 +37,7 @@ import { SmartBuffer } from "smart-buffer"
 
 import AssetDownloaderInstance, { AssetDownloader } from "./class/AssetDownloader"
 import SanctionInstance, { Sanction } from "./class/Sanction"
+import { DataStore } from "./class/DataStore"
 
 const NPM_LATEST_VERSION = "https://registry.npmjs.org/node-hill-s/latest"
 
@@ -194,8 +194,9 @@ const disableCoreScript = (name: string) => {
         GameObject.serverSettings.disabledCoreScripts.push(name)
 }
 
-function vmLoadScriptInDirectory(vm: NodeVM, scriptDirectory: string, scriptType: string) {
+function vmLoadScriptInDirectory(sandbox: any, scriptDirectory: string, scriptType: string) {
     const files = globSync(scriptDirectory + recursePattern(), { dot: true })
+    const { createRequire } = require("node:module")
 
     for (const filePath of files) {
         const fileName = basename(filePath)
@@ -208,7 +209,44 @@ function vmLoadScriptInDirectory(vm: NodeVM, scriptDirectory: string, scriptType
 
         try {
             const scriptContents = fs.readFileSync(filePath, { encoding: "utf-8" })
-            vm.run(scriptContents, filePath)
+            
+            const scriptRequire = createRequire(resolve(filePath))
+            const moduleObj = { exports: {} }
+
+            const contextKeys = [
+                ...Object.keys(sandbox),
+                "require", "module", "exports", "__dirname", "__filename",
+                // Mask globals to prevent easy Deno API access
+                "Deno", "process", "globalThis", "window", "global"
+            ]
+
+            const customRequire = (id: string) => {
+                if (id.startsWith(".")) {
+                    const resPath = resolve(dirname(filePath), id + (id.endsWith(".js") ? "" : ".js"))
+                    if (fs.existsSync(resPath)) {
+                        const code = fs.readFileSync(resPath, "utf-8")
+                        const mod = { exports: {} }
+                        const fn = new Function(...contextKeys, code)
+                        fn(
+                            ...Object.values(sandbox),
+                            customRequire, mod, mod.exports, dirname(resPath), resPath,
+                            undefined, undefined, undefined, undefined, undefined
+                        )
+                        return mod.exports
+                    }
+                }
+                return scriptRequire(id)
+            }
+
+            const contextValues = [
+                ...Object.values(sandbox),
+                customRequire, moduleObj, moduleObj.exports, dirname(filePath), filePath,
+                undefined, undefined, undefined, undefined, undefined
+            ]
+
+            const fn = new Function(...contextKeys, scriptContents)
+            fn(...contextValues)
+
             console.log(`[*] Loaded ${scriptType} Script: ${fileName}`)
         } catch (err) {
             console.log(`[*] Error loading ${scriptType} Script: ${fileName}`)
@@ -242,6 +280,8 @@ function loadScripts() {
         Sanction: SanctionInstance,
 
         AssetDownloader: AssetDownloaderInstance,
+
+        DataStore: DataStore,
 
         sleep: promisify(setTimeout),
 
@@ -304,23 +344,18 @@ function loadScripts() {
         }
     }
 
-    const vm = new NodeVM({
-        require: {
-            external: true,
-            root: process.cwd(),
-            context: "sandbox",
-        },
-        sandbox: sandbox
-    })
+    // Expose sandbox to the real global scope so npm modules (like nh-admin) can access them.
+    // User scripts still can't access `globalThis` because it's masked in the `new Function` arguments.
+    Object.assign(globalThis, sandbox)
 
     if (GameObject.serverSettings.disabledCoreScripts[0] !== "*")
-        vmLoadScriptInDirectory(vm, CORE_DIRECTORY, "Core")
+        vmLoadScriptInDirectory(sandbox, CORE_DIRECTORY, "Core")
     else
         console.log("[*] All Core Scripts disabled")
 
     if (!GameObject.serverSettings.scripts) return
 
-    vmLoadScriptInDirectory(vm, GameObject.serverSettings.scripts, "User")
+    vmLoadScriptInDirectory(sandbox, GameObject.serverSettings.scripts, "User")
 }
 
 async function initiateMap() {

@@ -1,4 +1,4 @@
-const phin = require("phin")
+const phin = require("../../util/request")
     .defaults({ parse: "json", timeout: 12000 })
 
 const API = (userId, badgeId) => `https://sandpile.xyz/api/userOwnsBadge?userId=${userId}&badgeId=${badgeId}`

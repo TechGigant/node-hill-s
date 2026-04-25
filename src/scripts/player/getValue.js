@@ -1,4 +1,4 @@
-const phin = require("phin").defaults({ parse: "json", timeout: 12000 })
+const phin = require("../../util/request").defaults({ parse: "json", timeout: 12000 })
 
 const API = (userId) => `https://api.brick-hill.com/v1/user/${userId}/value`
 

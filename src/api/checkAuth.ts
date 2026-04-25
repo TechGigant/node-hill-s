@@ -2,7 +2,7 @@ import { SmartBuffer } from "smart-buffer"
 import Game from "../class/Game"
 import { ClientSocket } from "../class/Player"
 
-const phin = require("phin")
+const phin = require("../util/request")
     .defaults({ "parse": "json", "timeout": 12000 })
 
 const AUTHENTICATION_API = (token: string, hostKey: string) => (

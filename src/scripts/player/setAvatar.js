@@ -1,4 +1,4 @@
-const phin = require("phin")
+const phin = require("../../util/request")
     .defaults({"parse": "json", "timeout": 12000})
 
 const GET_ASSETS =  "https://sandpile.xyz/api/getCharacter/"

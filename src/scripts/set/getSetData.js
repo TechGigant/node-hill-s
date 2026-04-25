@@ -1,4 +1,4 @@
-const phin = require("phin")
+const phin = require("../../util/request")
     .defaults({ parse: "json", timeout: 12000 })
 
 const API = "https://sandpile.xyz/api/getSetData/"

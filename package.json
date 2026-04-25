@@ -7,10 +7,8 @@
     "glob": "^13.0.2",
     "nh-admin": "^2.0.0",
     "nh-bundle": "^1.4.6",
-    "phin": "^3.7.1",
     "serverline": "^1.5.0",
-    "smart-buffer": "^4.2.0",
-    "vm2": "^3.10.4"
+    "smart-buffer": "^4.2.0"
   },
   "types": "./types.d.ts",
   "devDependencies": {

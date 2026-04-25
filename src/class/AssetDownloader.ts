@@ -1,4 +1,4 @@
-const phin = require("phin")
+const phin = require("../util/request")
     .defaults({ "timeout": 12000 })
 
 const ASSET_API = (itemId: number) => `https://sandpile.xyz/api/getAsset/${itemId}`

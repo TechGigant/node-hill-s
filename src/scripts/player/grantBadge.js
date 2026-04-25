@@ -1,4 +1,4 @@
-const phin = require("phin")
+const phin = require("../../util/request")
     .defaults({
         url: "https://sandpile.xyz/api/grantBadgeItem",
         method: "POST",
