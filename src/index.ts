@@ -235,7 +235,12 @@ function vmLoadScriptInDirectory(sandbox: any, scriptDirectory: string, scriptTy
                         return mod.exports
                     }
                 }
-                return scriptRequire(id)
+                
+                if (scriptType === "Core" || id === "nh-admin") {
+                    return scriptRequire(id)
+                }
+
+                throw new Error(`Direct require() is disabled for security. Use getModule('${id}') instead, and ensure the module is listed in your start.js modules array.`)
             }
 
             const contextValues = [
